@@ -47,24 +47,10 @@ defmodule Chessfold do
   # Knight moves
   @attack_n 6
 
+  # Code.eval_string is used to preserve data structure from being formatted
+  # https://elixirforum.com/t/configure-formatter-to-ignore-some-part-of-code/16081
+
   # Formula: attacked_square - attacking_square + 128 = pieces able to attack
-
-  # @attack_array [
-  #   0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,2,0,0,0, # 0-19
-  #   0,0,0,5,0,0,5,0,0,0,0,0,2,0,0,0,0,0,5,0, # 20-39
-  #   0,0,0,5,0,0,0,0,2,0,0,0,0,5,0,0,0,0,0,0, # 40-59
-  #   5,0,0,0,2,0,0,0,5,0,0,0,0,0,0,0,0,5,0,0, # 60-79
-  #   2,0,0,5,0,0,0,0,0,0,0,0,0,0,5,6,2,6,5,0, # 80-99
-  #   0,0,0,0,0,0,0,0,0,0,6,4,1,4,6,0,0,0,0,0, # 100-119
-  #   0,2,2,2,2,2,2,1,0,1,2,2,2,2,2,2,0,0,0,0, # 120-139
-  #   0,0,6,3,1,3,6,0,0,0,0,0,0,0,0,0,0,0,5,6, # 140-159
-  #   2,6,5,0,0,0,0,0,0,0,0,0,0,5,0,0,2,0,0,5, # 160-179
-  #   0,0,0,0,0,0,0,0,5,0,0,0,2,0,0,0,5,0,0,0, # 180-199
-  #   0,0,0,5,0,0,0,0,2,0,0,0,0,5,0,0,0,0,5,0, # 200-219
-  #   0,0,0,0,2,0,0,0,0,0,5,0,0,5,0,0,0,0,0,0, # 220-239
-  #   2,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0        # 240-256
-  # ]
-
   @attack_array Code.eval_string("""
                 [
                   0,0,0,0,0,0,0,0,0,5,0,0,0,0,0,0,2,0,0,0, # 0-19
@@ -81,25 +67,10 @@ defmodule Chessfold do
                   0,0,0,0,2,0,0,0,0,0,5,0,0,5,0,0,0,0,0,0, # 220-239
                   2,0,0,0,0,0,0,5,0,0,0,0,0,0,0,0,0        # 240-256
                 ]
-                """) |> elem(0)
-  
-  # Same as attack array but gives the delta needed to get to the square
-  # @delta_array [
-  #   0,   0,   0,   0,   0,   0,   0,   0,   0, -17,   0,   0,   0,   0,   0,   0, -16,   0,   0,   0,
-  #   0,   0,   0, -15,   0,   0, -17,   0,   0,   0,   0,   0, -16,   0,   0,   0,   0,   0, -15,   0,
-  #   0,   0,   0, -17,   0,   0,   0,   0, -16,   0,   0,   0,   0, -15,   0,   0,   0,   0,   0,   0,
-  #   -17,   0,   0,   0, -16,   0,   0,   0, -15,   0,   0,   0,   0,   0,   0,   0,   0, -17,   0,   0,
-  #   -16,   0,   0, -15,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, -17, -33, -16, -31, -15,   0,
-  #   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, -18, -17, -16, -15, -14,   0,   0,   0,   0,   0,
-  #   0,  -1,  -1,  -1,  -1,  -1,  -1,  -1,   0,   1,   1,   1,   1,   1,   1,   1,   0,   0,   0,   0,
-  #   0,   0,  14,  15,  16,  17,  18,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  15,  31,
-  #   16,  33,  17,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,  15,   0,   0,  16,   0,   0,  17,
-  #   0,   0,   0,   0,   0,   0,   0,   0,  15,   0,   0,   0,  16,   0,   0,   0,  17,   0,   0,   0,
-  #   0,   0,   0,  15,   0,   0,   0,   0,  16,   0,   0,   0,   0,  17,   0,   0,   0,   0,  15,   0,
-  #   0,   0,   0,   0,  16,   0,   0,   0,   0,   0,  17,   0,   0,  15,   0,   0,   0,   0,   0,   0,
-  #   16,   0,   0,   0,   0,   0,   0,  17,   0,   0,   0,   0,   0,   0,   0,   0,   0
-  # ]
+                """)
+                |> elem(0)
 
+  # Same as attack array but gives the delta needed to get to the square
   @delta_array Code.eval_string("""
                [  
                  0,   0,   0,   0,   0,   0,   0,   0,   0, -17,   0,   0,   0,   0,   0,   0, -16,   0,   0,   0,
@@ -116,11 +87,12 @@ defmodule Chessfold do
                  0,   0,   0,   0,  16,   0,   0,   0,   0,   0,  17,   0,   0,  15,   0,   0,   0,   0,   0,   0,
                  16,   0,   0,   0,   0,   0,   0,  17,   0,   0,   0,   0,   0,   0,   0,   0,   0
                ]
-               """) |> elem(0)
+               """)
+               |> elem(0)
 
-  # @type square() :: @bottom_left_corner..@top_right_corner # In 0x88 representation
-  # @type square() :: 0..119
-  # @type castling() :: false | :king | :queen
+  # ADDITIONAL
+  @san_regex ~r/([BKNPQR])?(([a-h])?([1-8])?)(x)?([a-h])([1-8])(\s*[eE]\.?[pP]\.?\s*)?(=([BNQR]))?([\+#])?/
+  @coordinates_regex ~r/^([a-h])?([1-8])?([a-h])?([1-8])?$/
 
   def player_color(%Position{turn: turn}), do: turn
 
@@ -924,17 +896,17 @@ defmodule Chessfold do
          move_list_acc,
          position,
          from,
-         _to,
+         to,
          taken,
          _castling,
          _new_en_passant,
          true
        ) do
     move_list_acc
-    |> insert_pseudo_legal_move(position, from, %Piece{type: :knight}, taken, false, false, false)
-    |> insert_pseudo_legal_move(position, from, %Piece{type: :bishop}, taken, false, false, false)
-    |> insert_pseudo_legal_move(position, from, %Piece{type: :rook}, taken, false, false, false)
-    |> insert_pseudo_legal_move(position, from, %Piece{type: :queen}, taken, false, false, false)
+    |> insert_pseudo_legal_move(position, from, %{to | type: :knight}, taken, false, false, false)
+    |> insert_pseudo_legal_move(position, from, %{to | type: :bishop}, taken, false, false, false)
+    |> insert_pseudo_legal_move(position, from, %{to | type: :rook}, taken, false, false, false)
+    |> insert_pseudo_legal_move(position, from, %{to | type: :queen}, taken, false, false, false)
   end
 
   # Not a promotion
@@ -1113,16 +1085,31 @@ defmodule Chessfold do
   ###############################################################
 
   defp eliminate_illegal_moves(moves), do: eliminate_illegal_moves(moves, [])
-  defp eliminate_illegal_moves([], legal_moves), do: legal_moves
+  defp eliminate_illegal_moves([], legal_moves_acc), do: legal_moves_acc
 
-  defp eliminate_illegal_moves(moves, legal_moves_acc) do
-    [move, remaining_moves] = moves
-
+  defp eliminate_illegal_moves([move | remaining_moves] = _moves, legal_moves_acc) do
     # Determine if there is an attack *after* the move
+    pieces = move.new_position.pieces
+    player_color = move.from.color
+    opponent_color = move.new_position.turn
 
     # The king of the player who has *just played*, i.e. not the same king as if we called is_king_attacked on the resulting position
+    kg_square = king_square(pieces, player_color)
+    player_king_attacked = is_square_in_attack(pieces, opponent_color, kg_square)
 
     # In case of castling, verify the start and median square as well
+    start_square = move.from.square
+    illegal = case {player_king_attacked, move.castling} do
+      {true,       _} -> true;
+      {false,  false} -> false;
+      {false,  :king} -> is_any_square_in_attack(pieces, opponent_color, [start_square, start_square + 1]);
+      {false, :queen} -> is_any_square_in_attack(pieces, opponent_color, [start_square, start_square - 1])
+    end
+
+    case illegal do
+      false -> eliminate_illegal_moves(remaining_moves, [move | legal_moves_acc])
+      _ -> eliminate_illegal_moves(remaining_moves, legal_moves_acc)
+    end
   end
 
   defp is_any_square_in_attack(_pieces, _attacking_piece_color, []), do: false
@@ -1169,6 +1156,7 @@ defmodule Chessfold do
     row_value = div(square, @row_span)
     # 0x88 representation
     col_value = rem(square, @row_span)
+    
     [col_value + ?a, row_value + ?1]
   end
 
@@ -1197,7 +1185,7 @@ defmodule Chessfold do
         _ -> "k"
       end
 
-    allowed_castling_string = Enum.join([wq_char, wk_char, bq_char, bk_char], "")
+    allowed_castling_string = Enum.join([wk_char, wq_char, bk_char, bq_char], "")
 
     case allowed_castling_string do
       "" -> "-"
@@ -1337,6 +1325,124 @@ defmodule Chessfold do
   defp pieces_of_color(pieces, color) do
     pieces
     |> Enum.filter(fn p -> p.color == color end)
+  end
+
+  ###############################################################
+  ## ADDITIONAL !!
+  ###############################################################
+  
+  def play(%Position{} = position, move) do
+    case Chessfold.all_possible_moves(position) |> Chessfold.select_move(move) do
+      {:ok, m} -> {:ok, m.new_position}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+  
+  # This accept san (eg. "e4") or coordinates (eg. "e2e4")
+  def select_move(moves, move, promotion_piece \\ :queen) do
+    case Regex.run(@coordinates_regex, move) do
+      [_, _, _, _, _] -> select_move_by_coordinates(moves, move, promotion_piece)
+      _ -> select_move_by_san(moves, move)
+    end
+  end
+  
+  defp select_move_by_san([], _), do: {:error, "no moves found"}
+  defp select_move_by_san(moves, "O-O") when is_list(moves) do
+    [first_move | _tails] = moves
+    case first_move.from.color do
+      :white -> select_move(moves, "e1g1")
+      _ -> select_move(moves, "e8g8")
+    end
+  end
+  defp select_move_by_san(moves, "O-O-O") when is_list(moves) do
+    [first_move | _tails] = moves
+    case first_move.from.color do
+      :white -> select_move_by_coordinates(moves, "e1c1")
+      _ -> select_move_by_coordinates(moves, "e8c8")
+    end
+  end
+  defp select_move_by_san(moves, san) when is_list(moves) and is_binary(san) do
+    case Regex.run(@san_regex, sanitize_san(san)) do
+      [_san, piece, _prefix, from_file, from_rank, _capture, to_rank, to_file] = _splitted_san->
+        filter = fn %Move{from: %Piece{type: from_piece, square: from_square}, to: %Piece{square: to_square}} = _move ->
+
+          to_coordinates = to_square |> Chessfold.square_to_string |> to_string
+
+          [f, r] = from_square |> Chessfold.square_to_string
+          rank = char_to_rank_or_file(from_rank)
+          file = char_to_rank_or_file(from_file)
+          
+          to_coordinates == (to_rank <> to_file) &&
+          charpiece_to_symbol(piece) == from_piece &&
+          (is_nil(rank) || rank == r - ?1) &&
+          (is_nil(file) || file == f - ?a)
+        end
+        
+        result = moves |> Enum.filter(&filter.(&1))
+        case result do
+          [] -> {:error, "no move found"}
+          [%Move{} = move] -> {:ok, move}
+          [_move|_tail] = _moves -> {:error, "ambigous search, found multipe moves"}
+        end
+        
+      _ ->
+        {:error, "Could not select by san #{san}"}
+    end
+  end
+  
+  defp charpiece_to_symbol(charpiece) do
+    case charpiece do
+      "K" -> :king
+      "Q" -> :queen
+      "R" -> :rook
+      "B" -> :bishop
+      "N" -> :knight
+      _ -> :pawn
+    end
+  end
+  
+  defp char_to_rank_or_file(char) do
+    case char do
+      c when c in ["1", "a"] -> 0
+      c when c in ["2", "b"] -> 1
+      c when c in ["3", "c"] -> 2
+      c when c in ["4", "d"] -> 3
+      c when c in ["5", "e"] -> 4
+      c when c in ["6", "f"] -> 5
+      c when c in ["7", "g"] -> 6
+      c when c in ["8", "h"] -> 7
+      _ -> nil
+    end
+  end
+  
+  defp sanitize_san(san) do
+    san
+    |> String.trim()
+    |> String.replace("+", "")
+    |> String.replace("!", "")
+    |> String.replace("?", "")
+    |> String.replace_trailing("-", "")
+    |> String.replace_trailing("=", "")
+  end
+  
+  defp select_move_by_coordinates(moves, coordinates, promotion_piece \\ :queen)
+  defp select_move_by_coordinates([], _, _), do: {:error, "no moves found"}
+  defp select_move_by_coordinates(moves, coordinates, promotion_piece) when is_list(moves) and is_binary(coordinates) do
+    filter_string = coordinates |> to_charlist
+    filter = fn m -> move_to_string(m) == filter_string end
+    
+    result = moves |> Enum.filter(&filter.(&1))
+    case result do
+      [] -> {:error, "no move found"}
+      [%Move{} = move] -> {:ok, move}
+      [_move|_tail] = moves -> 
+        # Promotion!
+        case moves |> Enum.filter(fn m -> m.to.type == promotion_piece end) do
+          [] -> {:error, "no move found"}
+          [%Move{} = move] -> {:ok, move}
+          [_move|_tail] = _moves -> {:error, "ambigous search, found multipe moves"}
+        end
+    end
   end
 
   # DEBUG
