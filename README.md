@@ -1,29 +1,26 @@
 # Chessfold
 
-**TODO: Add description**
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `chessfold` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:chessfold, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/chessfold](https://hexdocs.pm/chessfold).
-
-## Description
-
 This is a translation from Erlang to Elixir
 
 https://github.com/fcardinaux/chessfold
+
+## Installation
+
+This package is not available on Hex.
+
+## Description
+
+* Constants definition are not totally equivalent
+
+-type chessfold_square()        :: ?BOTTOM_LEFT_CORNER..?TOP_RIGHT_CORNER. % In 0x88 representation
+
+* rewrite lists:.. to Elixir equvalent
+* functions are mostly piped from the end -> adapt for Elixir
+* Strings are not equivalent in Erlang/Elixir
+* Erlang is using hrl files
+
+
+## Sample usage
 
 ```elixir
 iex> Chessfold.all_possible_moves(p) |> Enum.map(fn m -> m.new_position.pieces |> Enum.map(fn p -> Chessfold.square_to_string(p.square) end) end)
@@ -33,7 +30,7 @@ iex> Chessfold.all_possible_moves(p) |> Enum.each(fn m -> Chessfold.print_positi
 iex> Chessfold.all_possible_moves(p) |> Enum.each(fn m -> IO.inspect(m); IO.inspect Chessfold.print_position(m.new_position) end)
 ```
 
-## Sample usage
+Load position from fen string
 
 ```elixir
 iex> string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
