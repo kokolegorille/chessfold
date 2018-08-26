@@ -23,10 +23,10 @@ This package is not available on Hex.
 ## Sample usage
 
 ```elixir
+iex> string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+iex> p = Chessfold.string_to_position string
 iex> Chessfold.all_possible_moves(p) |> Enum.map(fn m -> m.new_position.pieces |> Enum.map(fn p -> Chessfold.square_to_string(p.square) end) end)
-
 iex> Chessfold.all_possible_moves(p) |> Enum.each(fn m -> Chessfold.print_position(m.new_position) end)
-
 iex> Chessfold.all_possible_moves(p) |> Enum.each(fn m -> IO.inspect(m); IO.inspect Chessfold.print_position(m.new_position) end)
 ```
 
