@@ -91,7 +91,7 @@ defmodule Chessfold do
                |> elem(0)
 
   # ADDITIONAL
-  @san_regex ~r/([BKNPQR])?(([a-h])?([1-8])?)(x)?([a-h])([1-8])(\s*[eE]\.?[pP]\.?\s*)?(=([BNQR]))?([\+#])?/
+  @san_regex ~r/([BKNPQR])?(([a-h])?([1-8])?)(x)?([a-h])([1-8])(\s*[eE]\.?[pP]\.?\s*)?=?([BNQR])?[\+#]?/
   @coordinates_regex ~r/^([a-h])?([1-8])?([a-h])?([1-8])?$/
 
   def player_color(%Position{turn: turn}), do: turn
@@ -1363,7 +1363,7 @@ defmodule Chessfold do
   end
   defp select_move_by_san(moves, san) when is_list(moves) and is_binary(san) do
     case Regex.run(@san_regex, sanitize_san(san)) do
-      [_san, piece, _prefix, from_file, from_rank, _capture, to_rank, to_file] = _splitted_san->
+      [_san, piece, _prefix, from_file, from_rank, _capture, to_rank, to_file] = _splitted_san ->
         filter = fn %Move{from: %Piece{type: from_piece, square: from_square}, to: %Piece{square: to_square}} = _move ->
 
           to_coordinates = to_square |> Chessfold.square_to_string |> to_string
@@ -1374,6 +1374,28 @@ defmodule Chessfold do
           
           to_coordinates == (to_rank <> to_file) &&
           charpiece_to_symbol(piece) == from_piece &&
+          (is_nil(rank) || rank == r - ?1) &&
+          (is_nil(file) || file == f - ?a)
+        end
+        
+        result = moves |> Enum.filter(&filter.(&1))
+        case result do
+          [] -> {:error, "no move found"}
+          [%Move{} = move] -> {:ok, move}
+          [_move|_tail] = _moves -> {:error, "ambigous search, found multipe moves"}
+        end
+      
+      [_san, piece, _prefix, from_file, from_rank, _capture, to_rank, to_file, _ep, promoted_piece] = _splitted_san ->
+        filter = fn %Move{from: %Piece{type: from_piece, square: from_square}, to: %Piece{type: to_piece, square: to_square}} = _move -> 
+          to_coordinates = to_square |> Chessfold.square_to_string |> to_string
+
+          [f, r] = from_square |> Chessfold.square_to_string
+          rank = char_to_rank_or_file(from_rank)
+          file = char_to_rank_or_file(from_file)
+        
+          to_coordinates == (to_rank <> to_file) &&
+          charpiece_to_symbol(piece) == from_piece &&
+          charpiece_to_symbol(promoted_piece) == to_piece &&
           (is_nil(rank) || rank == r - ?1) &&
           (is_nil(file) || file == f - ?a)
         end

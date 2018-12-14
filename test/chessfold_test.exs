@@ -238,5 +238,21 @@ defmodule ChessfoldTest do
       assert Chessfold.position_to_string(final_position) == "8/8/4R1p1/2k3p1/1p4P1/1P1b1P2/3K1n2/8 b - - 2 43"
     end
     
+    test "it can play promotion", context do
+      pgn_moves = """ 
+      "e4 Nf6 e5 Nd5 d4 d6 Nf3 Bg4 Be2 Nc6 e6 fxe6 Ng5 Bxe2 Qxe2 Nxd4 Qe4 c5 Nxh7 Nf6 Nxf6 exf6 Qg6 Kd7 Na3 Qe8 Qd3 Qh5 Be3 Nc6 Rd1 Rd8 Qb3 
+      b6 Nb5 Qh4 c3 Rh5 Na3 Kc7 h3 d5 g4 Re5 Kf1 Re4 Qc2 Rxg4 f3 Rg3 Qh2 Kb7 Ke2 Rg6 Rhg1 Rxg1 Rxg1 g5 Rg4 Qh7 f4 d4 cxd4 Nxd4 Kf2 Qe4 Qg2 
+      Qxg2 Rxg2 gxf4 Bxf4 e5 Be3 Nf5 Rg6 Be7 Rg1 Rd3 Re1 Rxe3 Rxe3 Nxe3 Kxe3 f5 Nc4 f4 Ke4 Bf6 Kf5 Bh8 Ke4 Kc6 Nd2 Kb5 h4 Kb4 h5 c4 h6 Kc5 
+      Nf3 Kd6 Nh4 Bf6 h7 b5 Ng6 Ke6 Nf8 Kd6 Ng6 Ke6 Nf8 Kd6 Ng6 Ke6 Nf8 Kf7 Nd7 Bg7 Nxe5 Ke6 Ng6 f3 Nf4 Kd6 Kxf3 Bxb2 Ke4 b4 Ng6 a5 h8=Q Bxh8 
+      Nxh8 Kc5 Ng6 a4 Nf4 b3 axb3 a3 Ne6 Kd6 Nd4 a2 bxc4 a1=Q c5 Kc7 Kd5 Qa2 Ke5 Qc4 c6 Qc5 Ke4 Kd6 c7 Qe5"
+      """
+      
+      final_position = pgn_moves 
+      |> String.split(" ") 
+      |> Enum.reduce(context.position, fn(m, acc) -> {:ok, acc} = Chessfold.play(acc, m); acc end)
+      
+      assert Chessfold.position_to_string(final_position) == "8/2P5/3k4/4q3/3NK3/8/8/8 w - - 1 81"
+    end
+    
   end
 end

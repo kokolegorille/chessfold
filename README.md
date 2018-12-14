@@ -14,8 +14,46 @@ This package is not available on Hex.
 
 -type chessfold_square()        :: ?BOTTOM_LEFT_CORNER..?TOP_RIGHT_CORNER. % In 0x88 representation
 
+but @bottom_left_corner..@top_right_corner does not work in Elixir!
+
 * rewrite lists:.. to Elixir equvalent
+
+lists:filter
+lists:keyfind
+lists:keydelete
+lists:foldl
+lists:nth
+
 * functions are mostly piped from the end -> adapt for Elixir
+
+eg. Erlang
+
+```erlang
+accumulate_pseudo_legal_rook_moves(#chessfold_position{turn = Turn} = Position, MovedPiece, MoveListAcc) ->
+    Square = MovedPiece#chessfold_piece.square,
+    accumulate_moves(Position, MovedPiece, Square,  ?ROW_SPAN, Turn, true, 
+    accumulate_moves(Position, MovedPiece, Square, -?ROW_SPAN, Turn, true, 
+    accumulate_moves(Position, MovedPiece, Square,   1, Turn, true, 
+    accumulate_moves(Position, MovedPiece, Square,  -1, Turn, true, MoveListAcc)))).
+```
+
+Elixir equivalent (accumulate_move has been modified to accept the list as first param.)
+
+```elixir
+  defp accumulate_pseudo_legal_rook_moves(
+         %Position{turn: turn} = position,
+         %Piece{square: square} = moved_piece,
+         move_list_acc
+       ) do
+    move_list_acc
+    |> accumulate_moves(position, moved_piece, square, -1, turn, true)
+    |> accumulate_moves(position, moved_piece, square, 1, turn, true)
+    |> accumulate_moves(position, moved_piece, square, -@row_span, turn, true)
+    |> accumulate_moves(position, moved_piece, square, @row_span, turn, true)
+  end
+```
+
+
 * Strings are not equivalent in Erlang/Elixir
 * Erlang is using hrl files
 
